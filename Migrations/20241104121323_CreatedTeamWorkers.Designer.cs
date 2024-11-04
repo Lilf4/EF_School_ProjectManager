@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EFProject.Migrations
 {
     [DbContext(typeof(ProjectManager))]
-    partial class ProjectManagerModelSnapshot : ModelSnapshot
+    [Migration("20241104121323_CreatedTeamWorkers")]
+    partial class CreatedTeamWorkers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.10");
@@ -55,8 +58,6 @@ namespace EFProject.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("TeamId", "WorkerId");
-
-                    b.HasIndex("WorkerId");
 
                     b.ToTable("TeamWorker");
                 });
@@ -112,25 +113,6 @@ namespace EFProject.Migrations
                     b.HasKey("WorkerId");
 
                     b.ToTable("Worker");
-                });
-
-            modelBuilder.Entity("TeamWorker", b =>
-                {
-                    b.HasOne("Team", "Team")
-                        .WithMany()
-                        .HasForeignKey("TeamId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Worker", "Worker")
-                        .WithMany()
-                        .HasForeignKey("WorkerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Team");
-
-                    b.Navigation("Worker");
                 });
 
             modelBuilder.Entity("TeamWorker1", b =>

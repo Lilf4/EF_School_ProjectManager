@@ -6,6 +6,7 @@ public class Program
 	public static void Main(string[] args)
 	{
 		printIncompleteTasksAndTodos();
+		seedWorkers();
 	}
 
 	public static void  printIncompleteTasksAndTodos(){
@@ -49,6 +50,53 @@ public class Program
 			new Todo(){Name = "Pour coffee"}, 
 			new Todo(){Name = "Turn on"}]);
 		db.Add(coffeTask);
+		db.SaveChanges();
+	}
+
+	public static void seedWorkers(){
+		using var db = new ProjectManager();
+
+		Team frontend = new Team(){
+			Name = "Frontend"
+		};
+		Team backend = new Team(){
+			Name = "Backend"
+		};
+		Team testere = new Team(){
+			Name = "Testere"
+		};
+
+		Worker steen = new Worker(){
+			Name = "Steen Secher"
+		};
+		Worker ejvind = new Worker(){
+			Name = "Ejvind Møller"
+		};
+		Worker konrad = new Worker(){
+			Name = "Konrad Sommer"
+		};
+		Worker sofus = new Worker(){
+			Name = "Sofus Lotus"
+		};
+		Worker remo = new Worker(){
+			Name = "Remo Lademann"
+		};
+		Worker ella = new Worker(){
+			Name = "Ella Fanth"
+		};
+		Worker anne = new Worker(){
+			Name = "Anne Dam"
+		};
+
+		db.Add(new TeamWorker(){Team = frontend, Worker = steen});
+		db.Add(new TeamWorker(){Team = frontend, Worker = ejvind});
+		db.Add(new TeamWorker(){Team = frontend, Worker = konrad});
+		db.Add(new TeamWorker(){Team = backend, Worker = konrad});
+		db.Add(new TeamWorker(){Team = backend, Worker = sofus});
+		db.Add(new TeamWorker(){Team = backend, Worker = remo});
+		db.Add(new TeamWorker(){Team = testere, Worker = ella});
+		db.Add(new TeamWorker(){Team = testere, Worker = anne});
+		db.Add(new TeamWorker(){Team = testere, Worker = steen});
 		db.SaveChanges();
 	}
 }
