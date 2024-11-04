@@ -1,19 +1,39 @@
 ﻿using System;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 public class Program
 {
 	public static void Main(string[] args)
 	{
-		seedTasks();
+		printIncompleteTasksAndTodos();
+	}
+
+	public static void  printIncompleteTasksAndTodos(){
+		using var db = new ProjectManager();
+		var tasks = db.Tasks
+			.Where(task => task.Todos.Any(todo => !todo.IsComplete))
+			.Include(task => task.Todos.Where(todo => !todo.IsComplete));
+		foreach(Task task in tasks){
+			Console.Write(task.TaskId);
+			Console.Write(" | ");
+			Console.WriteLine(task.Name);
+			foreach(Todo todo in task.Todos){
+				Console.Write(todo.TodoId);
+				Console.Write(" | ");
+				Console.Write(todo.Name);
+				Console.Write(" | ");
+				Console.WriteLine(todo.IsComplete);
+			}
+			Console.WriteLine("-------");
+		}
+
 	}
 	public static void seedTasks()
 	{
 		using var db = new ProjectManager();
 			
-		// Note: This sample requires the database to be created before running.
 		Console.WriteLine($"Database path: {db.DbPath}.");
 
-		// Create
 		Console.WriteLine("Inserting a new blog");
 		Task softwareTask = new Task(){Name = "Produce software"};
 		softwareTask.Todos.AddRange([
@@ -22,6 +42,7 @@ public class Program
 			new Todo(){Name = "Test program"}]);
 		db.Add(softwareTask);
 		db.SaveChanges();
+
 		Task coffeTask = new Task(){Name = "Brew coffe"};
 		coffeTask.Todos.AddRange([
 			new Todo(){Name = "Pour water"}, 
@@ -29,26 +50,5 @@ public class Program
 			new Todo(){Name = "Turn on"}]);
 		db.Add(coffeTask);
 		db.SaveChanges();
-		// Read
-		Console.WriteLine("Querying for a blog");
-		var blog = db.Tasks
-			.OrderBy(b => b.TaskId)
-			.FirstOrDefault(blog => blog.TaskId == 1);
-
-		
-
-		//// Update
-		//Console.WriteLine("Updating the blog and adding a post");
-		//blog.Url = "https://devblogs.microsoft.com/dotnet";
-		//blog.Posts.Add(
-		//    new Post { Title = "Hello World", Content = "I wrote an app using EF Core!" });
-		//db.SaveChanges();
-
-		//// Delete
-		//Console.WriteLine("Delete the blog");
-		//db.Remove(blog);
-		//db.SaveChanges();
-
-
 	}
 }
