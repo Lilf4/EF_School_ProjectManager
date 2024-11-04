@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EFProject.Migrations
 {
     [DbContext(typeof(ProjectManager))]
-    [Migration("20241104122155_CreatedTeamWorkers1")]
-    partial class CreatedTeamWorkers1
+    [Migration("20241104133417_AddedTasksToTeamWorkers")]
+    partial class AddedTasksToTeamWorkers
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -29,7 +29,17 @@ namespace EFProject.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("TeamId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("WorkerId")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("TaskId");
+
+                    b.HasIndex("TeamId");
+
+                    b.HasIndex("WorkerId");
 
                     b.ToTable("Tasks");
                 });
@@ -40,11 +50,16 @@ namespace EFProject.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("CurrentTaskTaskId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("TeamId");
+
+                    b.HasIndex("CurrentTaskTaskId");
 
                     b.ToTable("Team");
                 });
@@ -108,13 +123,38 @@ namespace EFProject.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("CurrentTodoTaskId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("WorkerId");
 
+                    b.HasIndex("CurrentTodoTaskId");
+
                     b.ToTable("Worker");
+                });
+
+            modelBuilder.Entity("Task", b =>
+                {
+                    b.HasOne("Team", null)
+                        .WithMany("AssignedTasks")
+                        .HasForeignKey("TeamId");
+
+                    b.HasOne("Worker", null)
+                        .WithMany("AssignedTodos")
+                        .HasForeignKey("WorkerId");
+                });
+
+            modelBuilder.Entity("Team", b =>
+                {
+                    b.HasOne("Task", "CurrentTask")
+                        .WithMany()
+                        .HasForeignKey("CurrentTaskTaskId");
+
+                    b.Navigation("CurrentTask");
                 });
 
             modelBuilder.Entity("TeamWorker", b =>
@@ -158,9 +198,28 @@ namespace EFProject.Migrations
                         .HasForeignKey("TaskId");
                 });
 
+            modelBuilder.Entity("Worker", b =>
+                {
+                    b.HasOne("Task", "CurrentTodo")
+                        .WithMany()
+                        .HasForeignKey("CurrentTodoTaskId");
+
+                    b.Navigation("CurrentTodo");
+                });
+
             modelBuilder.Entity("Task", b =>
                 {
                     b.Navigation("Todos");
+                });
+
+            modelBuilder.Entity("Team", b =>
+                {
+                    b.Navigation("AssignedTasks");
+                });
+
+            modelBuilder.Entity("Worker", b =>
+                {
+                    b.Navigation("AssignedTodos");
                 });
 #pragma warning restore 612, 618
         }

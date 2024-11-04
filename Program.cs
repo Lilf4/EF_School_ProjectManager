@@ -5,8 +5,29 @@ public class Program
 {
 	public static void Main(string[] args)
 	{
+		//seedTasks();
+		//seedWorkers();
+		using(var db = new ProjectManager()){
+			var teams = db.Team.Include(team => team.AssignedTasks).Include(team => team.CurrentTask);
+			var team = teams.First();
+			team.AssignedTasks.Add(db.Tasks.First());
+			team.CurrentTask = db.Tasks.First();
+			db.Update(team);
+			db.SaveChanges();
+		}
 		printIncompleteTasksAndTodos();
-		seedWorkers();
+		PrintTeamsWithoutTasks();
+	}
+
+	public static void PrintTeamsWithoutTasks(){
+		using var db = new ProjectManager();
+
+		var teams = db.Team
+			.Where(team => team.CurrentTask.Equals(null) && team.AssignedTasks.Count <= 0);
+		
+		foreach(Team team in teams){
+			Console.WriteLine(team.Name);
+		}
 	}
 
 	public static void  printIncompleteTasksAndTodos(){

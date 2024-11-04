@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EFProject.Migrations
 {
     [DbContext(typeof(ProjectManager))]
-    partial class ProjectManagerModelSnapshot : ModelSnapshot
+    [Migration("20241104132440_WorkerTodo")]
+    partial class WorkerTodo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.10");
@@ -47,7 +50,7 @@ namespace EFProject.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("CurrentTaskTaskId")
+                    b.Property<int>("CurrentTaskId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
@@ -56,7 +59,7 @@ namespace EFProject.Migrations
 
                     b.HasKey("TeamId");
 
-                    b.HasIndex("CurrentTaskTaskId");
+                    b.HasIndex("CurrentTaskId");
 
                     b.ToTable("Team");
                 });
@@ -120,7 +123,7 @@ namespace EFProject.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("CurrentTodoTaskId")
+                    b.Property<int>("CurrentTodoId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
@@ -129,7 +132,7 @@ namespace EFProject.Migrations
 
                     b.HasKey("WorkerId");
 
-                    b.HasIndex("CurrentTodoTaskId");
+                    b.HasIndex("CurrentTodoId");
 
                     b.ToTable("Worker");
                 });
@@ -137,11 +140,11 @@ namespace EFProject.Migrations
             modelBuilder.Entity("Task", b =>
                 {
                     b.HasOne("Team", null)
-                        .WithMany("AssignedTasks")
+                        .WithMany("Tasks")
                         .HasForeignKey("TeamId");
 
                     b.HasOne("Worker", null)
-                        .WithMany("AssignedTodos")
+                        .WithMany("Todos")
                         .HasForeignKey("WorkerId");
                 });
 
@@ -149,7 +152,9 @@ namespace EFProject.Migrations
                 {
                     b.HasOne("Task", "CurrentTask")
                         .WithMany()
-                        .HasForeignKey("CurrentTaskTaskId");
+                        .HasForeignKey("CurrentTaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("CurrentTask");
                 });
@@ -199,7 +204,9 @@ namespace EFProject.Migrations
                 {
                     b.HasOne("Task", "CurrentTodo")
                         .WithMany()
-                        .HasForeignKey("CurrentTodoTaskId");
+                        .HasForeignKey("CurrentTodoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("CurrentTodo");
                 });
@@ -211,12 +218,12 @@ namespace EFProject.Migrations
 
             modelBuilder.Entity("Team", b =>
                 {
-                    b.Navigation("AssignedTasks");
+                    b.Navigation("Tasks");
                 });
 
             modelBuilder.Entity("Worker", b =>
                 {
-                    b.Navigation("AssignedTodos");
+                    b.Navigation("Todos");
                 });
 #pragma warning restore 612, 618
         }

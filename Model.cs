@@ -47,12 +47,18 @@ public class Team{
 	public int TeamId {get; set;}
 	public string Name {get; set;}
 	public List<Worker> Workers {get;} = new();
+	//public int CurrentTaskId {get; set;}
+	public Task? CurrentTask {get; set;}
+	public List<Task> AssignedTasks {get;} = new();
 }
 
 public class Worker{
 	public int WorkerId {get; set;}
 	public string Name {get; set;}
 	public List<Team> Teams {get;} = new();
+	//public int CurrentTodoId {get; set;}
+	public Task? CurrentTodo {get; set;}
+	public List<Task> AssignedTodos {get;} = new();
 }
 
 public class TeamWorker{
